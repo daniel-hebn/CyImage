@@ -1,0 +1,10 @@
+server:
+  port: 4242
+
+---
+spring:
+  profiles: develop
+
+---
+spring:
+  profiles: production
