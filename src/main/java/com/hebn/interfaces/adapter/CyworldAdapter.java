@@ -110,8 +110,6 @@ public class CyworldAdapter {
         String firstAccessImageFolderLink = "http://cy.cyworld.com/home/" + tid + "/postlist?folderid=" + getImageFolder(tid) + "&_=" + getUnixTimeAtExecution();
         Document firstAccessImageFolderDoc = getDocumentByConnectTo(firstAccessImageFolderLink);
 
-        log.info("firstAccessImageFolderDoc = {}", firstAccessImageFolderDoc);
-
         String lastArticleId = firstAccessImageFolderDoc.select("article").last().attr("id");
         // NOTE: <input type="hidden" name="morePostCnt" value="24">
         String listSize = firstAccessImageFolderDoc.select("article").last().nextElementSibling().attr("value");
@@ -178,8 +176,6 @@ public class CyworldAdapter {
                         "&_=" + getUnixTimeAtExecution();
 
         Document moreAccessImageFolderDoc = getDocumentByConnectTo(linkMoreAccessImageFolder);
-
-        log.info("moreAccessImageFolderDoc = {}" , moreAccessImageFolderDoc);
 
         Elements moreAccessDocElements = moreAccessImageFolderDoc.select("article figure"); // NOTE: 싸이월드 페이지 내의 이미지 존재 elements
         imageLinkParsingAndSave(imageUploadDateAndImageLinkMap, moreAccessDocElements);

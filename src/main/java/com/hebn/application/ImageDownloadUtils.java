@@ -24,11 +24,6 @@ public class ImageDownloadUtils {
             if (image == null) {
                 log.error("존재하지 않는 이미지 url 입니다. imageUrl = {}", imageUrl);
             } else {
-                log.info("fileExt = {}", fileExt);
-                log.info("image.getWidth() = {}" , image.getWidth());
-                log.info("image.getHeight() = {}" , image.getHeight());
-                log.info("directoryPath / imageName = {}", directoryPath + "/" + imageName);
-
                 BufferedImage bufferedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
                 Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
                 graphics.setBackground(Color.WHITE);
