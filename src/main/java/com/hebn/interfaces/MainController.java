@@ -29,14 +29,19 @@ public class MainController {
 
     @ResponseBody
     @RequestMapping(value = "/api/cyImageDownload", method = RequestMethod.POST)
-    public String cyworldImageDownload(@RequestParam(value = "tid") String tid, @RequestParam(value = "directoryPath") String directoryPath) {
+    public String cyworldImageDownload(@RequestParam(value = "tid") String tid,
+                                       @RequestParam(value = "directoryPath") String directoryPath,
+                                       @RequestParam(value = "email", required = false) String email,
+                                       @RequestParam(value = "passwdRsa", required = false) String passwdRsa) {
         try {
-            Map<String, Collection<String>> totalImageUploadDateAndImageLinkMap = cyworldAdapter.getTotalImageLinkList(tid);
+            Map<String, String> cookieAfterLogin = cyworldAdapter.getCookieAfterLogin(email, passwdRsa);
+            Map<String, Collection<String>> totalImageUploadDateAndImageLinkMap = cyworldAdapter.getTotalImageLinkList(tid, cookieAfterLogin);
 
             for (Map.Entry<String, Collection<String>> entry : totalImageUploadDateAndImageLinkMap.entrySet()) {
                 String imageName = entry.getKey();
                 List<String> imageUrlList = Lists.newArrayList(entry.getValue());
 
+                // NOTE: 동일한 이름을 가질 경우 [1], [2] 등을 이미지명 뒤에 붙여 처리함
                 IntStream.range(0, imageUrlList.size())
                         .forEach(idx ->
                             ImageDownloadUtils.fileDownloadByUrl(directoryPath, imageUrlList.get(idx), imageName, idx)

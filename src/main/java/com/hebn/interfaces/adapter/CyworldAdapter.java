@@ -36,6 +36,8 @@ public class CyworldAdapter {
      * @throws IOException
      */
     public Map<String, String> getCookieAfterLogin(String email, String passwd) throws IOException {
+        if (email == null || passwd == null)
+            return null;
 
         // TODO - make passwd_rsa bases passwd
         String passwd_rsa = makePasswdRsaBy(passwd);
@@ -94,7 +96,6 @@ public class CyworldAdapter {
         return stringHomePage.substring(startIdxTid + "var tid=".length(), endIdxTid);
     }
 
-
     /**
      * 싸이월드 로그인 후 사진첩 폴더 내의 이미지 링크 url 획득
      * 첫 페이지 로딩 후, [더보기] 버튼을 순차적으로 눌러가며 paging 이후의 로딩되는 html 에서 이미지 url 파싱함
@@ -103,12 +104,12 @@ public class CyworldAdapter {
      * @param tid
      * @return
      */
-    public Map<String, Collection<String>> getTotalImageLinkList(String tid) throws IOException {
+    public Map<String, Collection<String>> getTotalImageLinkList(String tid, Map<String, String> cookiesAfterLogin) throws IOException {
         HashMultimap<String, String> imageUploadDateAndImageLinkMap = HashMultimap.create();
 
         // NOTE: 이미지 폴더 처음 접근 시
         String firstAccessImageFolderLink = "http://cy.cyworld.com/home/" + tid + "/postlist?folderid=" + getImageFolder(tid) + "&_=" + getUnixTimeAtExecution();
-        Document firstAccessImageFolderDoc = getDocumentByConnectTo(firstAccessImageFolderLink);
+        Document firstAccessImageFolderDoc = getDocumentByConnectTo(firstAccessImageFolderLink, cookiesAfterLogin);
 
         String lastArticleId = firstAccessImageFolderDoc.select("article").last().attr("id");
         // NOTE: <input type="hidden" name="morePostCnt" value="24">
@@ -122,7 +123,7 @@ public class CyworldAdapter {
         imageLinkParsingAndSave(imageUploadDateAndImageLinkMap, firstAccessDocElements);
 
         // NOTE: 이미지 더보기 클릭으로 추가 접근 시 - 이미지가 존재하지 않을 때까지 recursive call
-        getImageLinkMoreAccessImageFolder(tid, lastId, lastDate, listSize, imageUploadDateAndImageLinkMap);
+        getImageLinkMoreAccessImageFolder(tid, lastId, lastDate, listSize, cookiesAfterLogin, imageUploadDateAndImageLinkMap);
 
         return imageUploadDateAndImageLinkMap.asMap();
     }
@@ -143,8 +144,11 @@ public class CyworldAdapter {
         return System.currentTimeMillis();
     }
 
-    private Document getDocumentByConnectTo(String documentUrl) throws IOException {
-        return Jsoup.connect(documentUrl).timeout(0).get();
+    private Document getDocumentByConnectTo(String documentUrl, Map<String, String> cookiesAfterLogin) throws IOException {
+        return Jsoup.connect(documentUrl)
+                .cookies(cookiesAfterLogin)
+                .timeout(0)
+                .get();
     }
 
     private void imageLinkParsingAndSave(HashMultimap<String, String> imageUploadDateAndImageLinkMap, Elements elements) {
@@ -165,7 +169,9 @@ public class CyworldAdapter {
         }
     }
 
-    private void getImageLinkMoreAccessImageFolder(String tid, String lastId, String lastDate, String listSize, HashMultimap<String, String> imageUploadDateAndImageLinkMap) throws IOException {
+    private void getImageLinkMoreAccessImageFolder(String tid, String lastId, String lastDate, String listSize,
+                                                   Map<String, String> cookiesAfterLogin,
+                                                   HashMultimap<String, String> imageUploadDateAndImageLinkMap) throws IOException {
         if (Integer.parseInt(listSize) < 24) {   // NOTE: 마지막 페이지 도달 시
             return;
         }
@@ -175,7 +181,7 @@ public class CyworldAdapter {
                         "&startdate=&enddate=&folderid=" + getImageFolder(tid) + "&tagname=&listsize=" + listSize +
                         "&_=" + getUnixTimeAtExecution();
 
-        Document moreAccessImageFolderDoc = getDocumentByConnectTo(linkMoreAccessImageFolder);
+        Document moreAccessImageFolderDoc = getDocumentByConnectTo(linkMoreAccessImageFolder, cookiesAfterLogin);
 
         Elements moreAccessDocElements = moreAccessImageFolderDoc.select("article figure"); // NOTE: 싸이월드 페이지 내의 이미지 존재 elements
         imageLinkParsingAndSave(imageUploadDateAndImageLinkMap, moreAccessDocElements);
@@ -188,7 +194,7 @@ public class CyworldAdapter {
         String[] lastIdAndLastDate = lastArticleId.split("_");
         lastId = lastIdAndLastDate[0];
         lastDate = lastIdAndLastDate[1];
-        getImageLinkMoreAccessImageFolder(tid, lastId, lastDate, listSize, imageUploadDateAndImageLinkMap);
+        getImageLinkMoreAccessImageFolder(tid, lastId, lastDate, listSize, cookiesAfterLogin, imageUploadDateAndImageLinkMap);
     }
 
 }
