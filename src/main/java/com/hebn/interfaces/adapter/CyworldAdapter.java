@@ -2,7 +2,9 @@ package com.hebn.interfaces.adapter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,7 +39,7 @@ public class CyworldAdapter {
      */
     public Map<String, String> getCookieAfterLogin(String email, String passwd) throws IOException {
         if (email == null || passwd == null)
-            return null;
+            return Maps.newHashMap();
 
         // TODO - make passwd_rsa bases passwd
         String passwd_rsa = makePasswdRsaBy(passwd);
@@ -110,17 +112,21 @@ public class CyworldAdapter {
         // NOTE: 이미지 폴더 처음 접근 시
         String firstAccessImageFolderLink = "http://cy.cyworld.com/home/" + tid + "/postlist?folderid=" + getImageFolder(tid) + "&_=" + getUnixTimeAtExecution();
         Document firstAccessImageFolderDoc = getDocumentByConnectTo(firstAccessImageFolderLink, cookiesAfterLogin);
+        Elements articleWhenFirstAccessImages = firstAccessImageFolderDoc.select("article");
 
-        String lastArticleId = firstAccessImageFolderDoc.select("article").last().attr("id");
+        if (StringUtils.isEmpty(articleWhenFirstAccessImages.toString()))
+            return Maps.newHashMap();
+
+        Elements firstAccessDocElements = firstAccessImageFolderDoc.select("article figure"); // NOTE: 싸이월드 페이지 내의 이미지 존재 elements
+        imageLinkParsingAndSave(imageUploadDateAndImageLinkMap, firstAccessDocElements);
+
+        String lastArticleId = articleWhenFirstAccessImages.last().attr("id");
         // NOTE: <input type="hidden" name="morePostCnt" value="24">
         String listSize = firstAccessImageFolderDoc.select("article").last().nextElementSibling().attr("value");
 
         String[] lastIdAndLastDate = lastArticleId.split("_");
         String lastId = lastIdAndLastDate[0];
         String lastDate = lastIdAndLastDate[1];
-
-        Elements firstAccessDocElements = firstAccessImageFolderDoc.select("article figure"); // NOTE: 싸이월드 페이지 내의 이미지 존재 elements
-        imageLinkParsingAndSave(imageUploadDateAndImageLinkMap, firstAccessDocElements);
 
         // NOTE: 이미지 더보기 클릭으로 추가 접근 시 - 이미지가 존재하지 않을 때까지 recursive call
         getImageLinkMoreAccessImageFolder(tid, lastId, lastDate, listSize, cookiesAfterLogin, imageUploadDateAndImageLinkMap);

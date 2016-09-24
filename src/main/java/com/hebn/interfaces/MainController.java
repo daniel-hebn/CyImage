@@ -29,8 +29,8 @@ public class MainController {
 
     @ResponseBody
     @RequestMapping(value = "/api/cyImageDownload", method = RequestMethod.POST)
-    public String cyworldImageDownload(@RequestParam(value = "tid") String tid,
-                                       @RequestParam(value = "directoryPath") String directoryPath,
+    public String cyworldImageDownload(@RequestParam(value = "directoryPath") String directoryPath,
+                                       @RequestParam(value = "tid", required = false) String tid,
                                        @RequestParam(value = "email", required = false) String email,
                                        @RequestParam(value = "passwdRsa", required = false) String passwdRsa) {
         try {

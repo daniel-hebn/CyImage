@@ -24,6 +24,7 @@ public class ImageDownloadUtils {
             if (image == null) {
                 log.error("존재하지 않는 이미지 url 입니다. imageUrl = {}", imageUrl);
             } else {
+                log.info("imageUrl = {}", imageUrl);
                 BufferedImage bufferedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
                 Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
                 graphics.setBackground(Color.WHITE);
@@ -34,6 +35,7 @@ public class ImageDownloadUtils {
                 imageName = imageName.replace("/", ".");  // NOTE: 파일명 내 '/' 포함 시 오류 대응
 
                 File downloadImageFile = new File(directoryPath + "/" + imageName + "." + fileExt);
+                log.info("fileExt / file download => {} / {}" , fileExt, downloadImageFile.getAbsolutePath());
                 ImageIO.write(bufferedImage, fileExt, downloadImageFile);
             }
         } catch (IOException e) {
