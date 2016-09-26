@@ -2,7 +2,6 @@ package com.hebn.application;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -40,6 +39,10 @@ public class ImageDownloadUtils {
             }
         } catch (IOException e) {
             log.error("이미지 다운로드 중 에러 발생. imageUrl = {}", imageUrl);
+            ErrorLoggingUtils.errorLogging(log, e, imageUrl);
+        } catch (Exception e) {
+            log.error("이미지 다운로드 중 에러 발생. imageUrl = {}", imageUrl);
+            ErrorLoggingUtils.errorLogging(log, e, imageUrl);
         }
     }
 
