@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no"/>
+    <title>싸이월드 TID or 로그인/패스워드 입력 화면</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.min.css"/>
+</head>
+<body>
+<div class="container col-xs-9 col-sm-9 col-md-9 col-lg-9">
+    <h2>싸이월드 TID 입력</h2>
+    <h3> - 공개 설정된 이미지만 추출 가능</h3>
+    <div class="simple-info" style="margin-top:30px;">
+        <form name="simpleInfoForm" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 control-label" style="text-align:left;">
+                    <label class="control-label col-xs-4 col-sm-4 col-md-4 col-lg-4">다운로드 디렉토리 지정</label>
+                    <input type="text" name="simpleDirectoryPath"/>
+                </div>
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 control-label" style="text-align:left;">
+                    <label class="control-label col-xs-4 col-sm-4 col-md-4 col-lg-4">TID 입력</label>
+                    <input type="text" name="tid"/>
+                </div>
+                <div class="pull-right">
+                    <button id="simpleExtractBtn" class="btn btn-primary" type="button">이미지 추출 시작</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <h2 style="margin-top:60px;">싸이월드 로그인/패스워드 입력</h2>
+    <h3>- 일촌공개/비공개 사진까지 추출 가능</h3>
+    <div class="complex-info" style="margin-top:30px;">
+        <form name="complexInfoForm" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 control-label" style="text-align:left;">
+                    <label class="control-label col-xs-4 col-sm-4 col-md-4 col-lg-4">다운로드 디렉토리 지정</label>
+                    <input type="text" name="complexDirectoryPath"/>
+                </div>
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 control-label" style="text-align:left;">
+                    <label class="control-label col-xs-4 col-sm-4 col-md-4 col-lg-4">아이디 입력</label>
+                    <input type="text" name="email"/>
+                </div>
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 control-label" style="text-align:left;">
+                    <label class="control-label col-xs-4 col-sm-4 col-md-4 col-lg-4">패스워드 입력</label>
+                    <input type="password" name="passwd"/>
+                </div>
+                <div class="pull-right">
+                    <button id="complexExtractBtn" class="btn btn-primary" type="button">이미지 추출 시작</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js"></script>
+<script>
+    var simpleImageDownload = function (tid, directoryPath) {
+        waitingDialog.show('이미지 다운로드 중입니다');
+        $.ajax({
+            type: 'POST',
+            url: '/api/simple-CyImageDownload',
+            data: JSON.stringify({'tid': tid, 'directoryPath': directoryPath}),
+            contentType: 'application/json; charset=UTF-8'
+        }).done(function (data) {
+            waitingDialog.hide(data);
+        }).fail(function (data, textStatus, xhr) {
+            console.log("System Error. errorInfo = ", data.responseText, textStatus, xhr);
+            alert(data.responseText || alert('이미지 다운로드 중 에러가 발생했습니다.'));
+        });
+    };
+
+    $("#simpleExtractBtn").click(function() {
+        var $tid = $('[name=tid]');
+        var $directoryPath = $('[name=simpleDirectoryPath]');
+
+        simpleImageDownload($tid.val(), $directoryPath.val());
+    });
+
+
+
+
+</script>
+</body>
+</html>

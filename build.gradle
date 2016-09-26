@@ -28,8 +28,7 @@ repositories {
 
 dependencies {
 	compile('org.projectlombok:lombok')
-	compile('org.springframework.boot:spring-boot-star' +
-			'ter-thymeleaf')
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 
@@ -39,4 +38,7 @@ dependencies {
 
 	// apache commons-lang
 	compile 'org.apache.commons:commons-lang3:3.4'
+
+	// bootstrap
+	compile "org.webjars:bootstrap:3.3.4";
 }
