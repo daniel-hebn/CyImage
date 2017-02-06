@@ -8,3 +8,5 @@ spring:
 ---
 spring:
   profiles: production
+
+static.resource.location: file:/Users/coupang/
