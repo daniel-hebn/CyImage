@@ -9,4 +9,4 @@ spring:
 spring:
   profiles: production
 
-static.resource.location: file:/Users/coupang/
+static.resource.location: file:/opt/project/CyImage/
