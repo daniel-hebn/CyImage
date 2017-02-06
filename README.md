@@ -21,4 +21,5 @@ c. 만약 자신만의 비공개 폴더 내의 이미지도 내려 받고 싶다
 - 사용성이 좋은 UI 를 구현하려 api 로 만들어 진행했으나.. 귀찮
 - www.cyworld.co.kr 의 미니홈피 html 구조가 바뀌면 동작 안될 것임..
 
-
+## Example movie
+http://greg-lee.fun25.co.kr:13808/static/GetCyImage.mov
